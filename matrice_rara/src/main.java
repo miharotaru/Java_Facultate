@@ -31,6 +31,7 @@
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 class Element implements Comparable<Element>,Serializable{
@@ -133,6 +134,19 @@ public class main {
             if(e.getValoare_elemen()<0) nr++;
         }
         System.out.println("Numarul elementelor negative este "+ nr);
+
+        System.out.println("-----cerinta 3----");
+        List<Element> suma;
+        Map<Integer,Element> s;
+        List<Integer> nrNumere;
+        for(Element e:elemente){
+
+        }
+
+        elemente.stream().collect(Collectors.groupingBy(Element::getIndex_coloana,Collectors.averagingDouble(Element::getValoare_elemen)))
+                .forEach((a,b)-> System.out.println(a+":"+b));
+
+
 
         System.out.println("-----cerinta 4-----");
 

@@ -34,9 +34,7 @@
 //        Punctaj: 2 puncte
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 enum Tip{
@@ -150,12 +148,7 @@ class Programare implements Comparable<Programare>, Serializable{
 
 }
 
-//2) Să se citească informațiile într-o listă de tip List<Programare> și să se afișeze la consolă numărul
-//        total de cursuri și numărul total de seminarii.
 public class main {
-
-
-
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         List<Programare> programari= new ArrayList<>();
@@ -172,7 +165,7 @@ public class main {
         {
             System.out.println(a);
 
-            if(a.getTip().toString()=="CURS"){
+            if(a.getTip().toString().equals("CURS")){
                 cursuri++;
             }else seminarii++;
         }
@@ -181,13 +174,22 @@ public class main {
 
         System.out.println("-----cerinat 3------\n");
 
+        programari.stream().collect(Collectors.groupingBy(Programare::getDisciplina)).entrySet().stream().map(
+                entry -> new Object() {
+                    String disciplina = entry.getKey();
+                    int numar = entry.getValue().size();}
+        ).forEach(s-> System.out.println(s.disciplina));
+
+
 
         System.out.println("-----cerinat 4------");
-        programari.sort(Programare::compareTo);
-//        for (var a:programari)
-//        {
-//            System.out.println(a);
-//        }
+
+       // programari.sort(Programare::compareTo);
+        Collections.sort(programari);
+        for (var a:programari)
+        {
+            System.out.println(a);
+        }
 
             try(ObjectOutputStream out= new ObjectOutputStream(new FileOutputStream("date\\programari.dat"))){
                 for(Programare a:programari){
@@ -200,16 +202,11 @@ public class main {
                 while(in.available()!=0){
                     programari2.add((Programare) in1.readObject());
                 }
-
             }
 
             for(var a:programari2){
                 System.out.println(a);
             }
-
-
-
-
     }
 
 }
