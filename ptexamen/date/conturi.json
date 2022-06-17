@@ -1,0 +1,44 @@
+[
+  {
+    "nume": "Ion",
+    "cod": 1,
+    "conturi": [
+      {
+        "numar": 101,
+        "sold": 5000.10
+      },
+      {
+        "numar": 102,
+        "sold": 500
+      }
+    ]
+  },
+  {
+    "nume": "Ana",
+    "cod": 2,
+    "conturi": [
+      {
+        "numar": 201,
+        "sold": 765
+      }
+    ]
+  },
+  {
+    "nume": "Maria",
+    "cod": 3,
+    "conturi": [
+      {
+        "numar": 301,
+        "sold": 5000
+      },
+      {
+        "numar": 302,
+        "sold": 500
+      },
+      {
+        "numar": 303,
+        "sold": 500
+      }
+    ]
+  }
+]

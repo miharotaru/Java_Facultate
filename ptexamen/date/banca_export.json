@@ -1,0 +1,66 @@
+{
+   "listaConturi": [
+      {
+         "cod": 1,
+         "nume": "Ion Testescu",
+         "conturi": [
+            {
+               "sold": 5000.1,
+               "numar": 101
+            },
+            {
+               "sold": 500,
+               "numar": 102
+            }
+         ]
+      },
+      {
+         "cod": 2,
+         "nume": "Ana Marinescu",
+         "conturi": [{
+            "sold": 765,
+            "numar": 201
+         }]
+      },
+      {
+         "cod": 3,
+         "nume": "Maria Testescu",
+         "conturi": [
+            {
+               "sold": 5000,
+               "numar": 301
+            },
+            {
+               "sold": 500,
+               "numar": 302
+            },
+            {
+               "sold": 500,
+               "numar": 303
+            }
+         ]
+      }
+   ],
+   "listaTransferuri": [
+      {
+         "destinatie": 303,
+         "sursa": 301,
+         "valoare": 1000
+      },
+      {
+         "destinatie": 101,
+         "sursa": 301,
+         "valoare": 100
+      },
+      {
+         "destinatie": 102,
+         "sursa": 101,
+         "valoare": 7.5
+      },
+      {
+         "destinatie": 102,
+         "sursa": 101,
+         "valoare": 7.5
+      }
+   ]
+}

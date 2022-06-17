@@ -1,0 +1,27 @@
+[
+  {
+    "Denumire parcare": "Otopeni",
+    "Numar locuri": 550,
+    "Tarif pe ora": 5
+  },
+  {
+    "Denumire parcare": "Piata Revolutiei",
+    "Numar locuri": 157,
+    "Tarif pe ora": 20
+  },
+  {
+    "Denumire parcare": "Obor",
+    "Numar locuri": 270,
+    "Tarif pe ora": 10
+  },
+  {
+    "Denumire parcare": "Berceni",
+    "Numar locuri": 420,
+    "Tarif pe ora": 5
+  },
+  {
+    "Denumire parcare": "Gara de Nord",
+    "Numar locuri": 300,
+    "Tarif pe ora": 15
+  }
+]

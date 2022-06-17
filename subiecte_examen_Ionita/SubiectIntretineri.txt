@@ -1,0 +1,575 @@
+Fie datele de intrare (in directorul date):
+
+a) intretinere_apartamente.txt: lista de apartamente (numar apartament - întreg, suprafata - întreg, numar persoane - întreg) - fișier text de forma:
+1,100,1
+2,50,1
+3,75,2
+...
+
+b) intretinere_facturi.json: fișier text în format JSON cu următoarea structură:
+
+[
+  {
+    "denumire": "Apa calda",
+    "repartizare": "persoane",
+    "valoare": 800
+  },
+  {
+    "denumire": "Caldura",
+    "repartizare": "suprafata",
+    "valoare": 300
+  },
+  ...
+]
+
+Să se scrie o aplicație Java care să îndeplinească următoarele cerințe:
+
+1) Să se afișeze la consolă numărul apartamentului cu suprafața maximă
+Punctaj: 1 punct.
+Criteriu de acordare a punctajului: afișarea corectă la consolă
+
+2) Să se afișeze la consolă numărul total de persoane care locuiesc în imobil.
+Punctaj: 1 punct.
+Criteriu de acordare a punctajului: afișarea corectă la consolă
+
+3) Să se afișeze la consolă valoarea totală a facturilor pe fiecare tip de repartizare.
+Punctaj: 1 punct.
+Criteriu de acordare a punctajului: afișarea corectă la consolă
+
+4) Să implementeze funcționalitățile de server și client TCP/IP și să se execute următorul scenariu:
+- componenta client trimite serverului un număr de apartament
+- componenta server va întoarce clientului valoarea de plată defalcată pe cele trei tipuri cheltuieli pentru apartamentul respectiv.
+Serverul se va opri după servirea unei cereri.
+
+Punctaj:
+1 punct - afișarea la consolă de către server a numărului apartamentului
+1 punct - afișarea la consolă de către client a celor trei valori calculate
+Criteriu de acordare a punctajului: afișarea corectă la consolă
+
+*****************************
+*****************************
+*****************************
+ rezolvat de mine de 3)
+
+import org.json.JSONArray;
+import org.json.JSONTokener;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+final class Factura{
+    private final String denumire;
+    private final String repartizare;
+    private final int valoare;
+
+    public Factura(String denumire, String repartizare, int valoare) {
+        this.denumire = denumire;
+        this.repartizare = repartizare;
+        this.valoare = valoare;
+    }
+
+    public String getDenumire() {
+        return denumire;
+    }
+
+    public String getRepartizare() {
+        return repartizare;
+    }
+
+    public int getValoare() {
+        return valoare;
+    }
+
+    @Override
+    public String toString() {
+        return "Factura{denumire= "+
+                denumire+"," + "repartizare= "+repartizare+","+ "valoare="+valoare+"}";
+    }
+}
+final class Apartament{
+   private final int nrApartament;
+    private final int suprafata;
+    private final int nrPersoane;
+    private final List<Factura> listaFacturi;
+
+    public Apartament(int nrApartament, int suprafata, int nrPersoane) {
+        this.nrApartament = nrApartament;
+        this.suprafata = suprafata;
+        this.nrPersoane = nrPersoane;
+        listaFacturi=new ArrayList<>();
+    }
+
+    public List<Factura> getFacturi() {
+        return listaFacturi;
+    }
+
+    public int getNrApartament() {
+        return nrApartament;
+    }
+
+    public int getSuprafata() {
+        return suprafata;
+    }
+
+    public int getNrPersoane() {
+        return nrPersoane;
+    }
+
+    @Override
+    public String toString() {
+        return "Apartament{nr= "+
+                nrApartament+"," + "suprafata= "+suprafata+","+ "nrPersoane="+nrApartament+"facturi="+listaFacturi+"}";
+
+    }
+}
+
+final class MyClass2 {
+    static final String CALE_APARTAMENTE="date\\intretinere_apartamente.txt";
+    static final String CALE_FACTURI="date\\intretinere_facturi.json";
+
+    static List<Apartament> apartamente;
+    static List<Factura> listaFacturi=new ArrayList<>();
+    public static void main(String[] args){
+        try(var fisier=new BufferedReader(new FileReader(CALE_APARTAMENTE))){
+            apartamente=fisier.lines().map(linie-> new Apartament(
+                            Integer.parseInt(linie.split(",")[0]),
+                            Integer.parseInt(linie.split(",")[1]),
+                                    Integer.parseInt(linie.split(",")[2]))).collect(Collectors.toList());
+         //  apartamente.stream().sorted((a1,a2)->a1.getSuprafata()<a2.getSuprafata()? 1:-1 ).forEach(a-> System.out.println(a.getNrApartament()));
+            apartamente=apartamente.stream().sorted((a1,a2)->a1.getSuprafata()<a2.getSuprafata()? 1:-1 ).collect(Collectors.toList());
+            System.out.print("CERINTA1: ");
+            System.out.println(apartamente.get(0).getNrApartament());
+
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+      var nrTotalPersoane=0;
+        for (Apartament a : apartamente) {
+            nrTotalPersoane=nrTotalPersoane+a.getNrPersoane();
+        }
+
+
+
+        System.out.println("CERINTA2: "+ nrTotalPersoane);
+
+        try (var fisierFact = new FileReader(CALE_FACTURI)) {
+            var array = new JSONArray(new JSONTokener(fisierFact));
+            for (int i = 0; i < array.length(); i++) {
+                var jsonFacturi = array.getJSONObject(i);
+
+                var denumire = jsonFacturi.getString("denumire");
+                var repartizare = jsonFacturi.getString("repartizare");
+                var valoare = jsonFacturi.getInt("valoare");
+
+               Factura factura=new Factura(denumire,repartizare,valoare);
+               listaFacturi.add(factura);
+
+            }
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
+        //listaFacturi.forEach(System.out::println);
+        System.out.println("CERINTA 3: ");
+        var valTotalaPersoane=0;
+        var valTotalaSuprafata=0;
+        var valTotalaApartament=0;
+        for (Factura f:listaFacturi) {
+            if(f.getRepartizare().equals("persoane")){
+                valTotalaPersoane+=f.getValoare();
+            }
+            if(f.getRepartizare().equals("suprafata")){
+                valTotalaSuprafata+=f.getValoare();
+            }
+            if(f.getRepartizare().equals("apartament")){
+                valTotalaApartament+=f.getValoare();
+            }
+        }
+        System.out.println("Persoane: "+valTotalaPersoane);
+        System.out.println("Suprafata "+valTotalaSuprafata);
+        System.out.println("Apartament "+valTotalaApartament);
+
+            }
+}
+
+******************************************************
+
+rezolvare completa 
+public class Apartament {
+
+    private int numar_apartament;
+    private int suprafata;
+    private int numar_persoane;
+
+    public Apartament(int numar_apartament, int suprafata, int numar_persoane) {
+        this.numar_apartament = numar_apartament;
+        this.suprafata = suprafata;
+        this.numar_persoane = numar_persoane;
+    }
+
+    public int getNumar_apartament() {
+        return numar_apartament;
+    }
+
+    public int getSuprafata() {
+        return suprafata;
+    }
+
+    public int getNumar_persoane() {
+        return numar_persoane;
+    }
+
+    @Override
+    public String toString() {
+        return "Apartament{" +
+                "numar_apartament=" + numar_apartament +
+                ", suprafata=" + suprafata +
+                ", numar_persoane=" + numar_persoane +
+                '}';
+    }
+}
+public class Factura {
+
+    private String denumire_factura;
+    private String repartizare;
+    private double valoare;
+
+    public Factura(String denumire_factura, String repartizare, double valoare) {
+        this.denumire_factura = denumire_factura;
+        this.repartizare = repartizare;
+        this.valoare = valoare;
+    }
+
+    public String getDenumire_factura() {
+        return denumire_factura;
+    }
+
+    public String getRepartizare() {
+        return repartizare;
+    }
+
+    public double getValoare() {
+        return valoare;
+    }
+
+    @Override
+    public String toString() {
+        return "Factura{" +
+                "denumire_factura='" + denumire_factura + '\'' +
+                ", repartizare='" + repartizare + '\'' +
+                ", valoare=" + valoare +
+                '}';
+    }
+}
+import java.io.*;
+import java.net.Socket;
+import java.net.UnknownHostException;
+
+public class ClientTCP {
+
+    public static void main(String[] args){
+        if (args.length != 2) {
+            System.out.println("Numar incorect de parametri! Utilizare: <adresa IP> <port>");
+            System.exit(-1);
+        }
+
+        String adresaServer = args[0];
+        int port = Integer.valueOf(args[1]);
+
+        try{
+            System.out.println("Conectare la " + adresaServer + " port " + port);
+            Socket client = new Socket(adresaServer, port);
+
+            OutputStream streamIesire = client.getOutputStream();
+            DataOutputStream out = new DataOutputStream(streamIesire);
+
+            InputStream streamIntrare = client.getInputStream();
+            DataInputStream in = new DataInputStream(streamIntrare);
+
+            BufferedReader linieTastatura =  new BufferedReader(new InputStreamReader(System.in));
+            System.out.println("Scrie 'exit' pentru a inchide clientul");
+
+            while(true){
+                String linie = linieTastatura.readLine();
+
+                if(linie.equalsIgnoreCase("exit")){
+                    in.close();
+                    out.close();
+                    client.close();
+                    System.exit(0);
+                }
+
+                out.writeUTF(linie);
+
+                System.out.println(in.readUTF());
+
+                in.close();
+                out.close();
+                client.close();
+                System.exit(0);
+            }
+
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+import org.json.JSONArray;
+import org.json.JSONTokener;
+
+import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class ServerTCP {
+
+    private static ServerSocket server;
+
+    public static void main(String[] args) throws IOException {
+        if(args.length != 1){
+            System.out.println("Numar incorect de parametri! Utilizare: <port>");
+            System.exit(-1);
+        }
+
+        //Citire apartamente
+        List<Apartament> listaApartamente = new ArrayList<>();
+
+        try{
+            var fisierApartamente = new File("src\\intretinere_apartamente.txt");
+
+            Scanner readerApartamente = new Scanner(fisierApartamente).useDelimiter(",");
+
+            while(readerApartamente.hasNextLine()){
+                String linie = readerApartamente.nextLine();
+                String[] elemAp = linie.split(",");
+
+                int numar_apartament = Integer.parseInt(elemAp[0]);
+                int suprafata = Integer.parseInt(elemAp[1]);
+                int numar_persoane = Integer.parseInt(elemAp[2]);
+
+                Apartament tempAp = new Apartament(numar_apartament, suprafata, numar_persoane);
+                listaApartamente.add(tempAp);
+            }
+            readerApartamente.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        //Citire facturi
+        List<Factura> listaFacturi = new ArrayList<>();
+
+        try(var fisier = new FileReader("src\\intretinere_facturi.json")){
+            var jsonFacturi = new JSONArray(new JSONTokener(fisier));
+
+            for(int i=0; i<jsonFacturi.length(); i++) {
+                var jsonFactura = jsonFacturi.getJSONObject(i);
+
+                Factura tempFactura = new Factura(
+                        jsonFactura.getString("denumire"),
+                        jsonFactura.getString("repartizare"),
+                        jsonFactura.getDouble("valoare")
+                );
+
+                listaFacturi.add(tempFactura);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Factura fApaCalda = listaFacturi.get(0);
+        Factura fCaldura = listaFacturi.get(1);
+        Factura fGunoi = listaFacturi.get(2);
+        Factura fGazeNaturale = listaFacturi.get(3);
+
+        //implementare efectiva server
+        int port = Integer.valueOf(args[0]);
+
+        DataInputStream in = null;
+        DataOutputStream out = null;
+        Socket client = null;
+
+        try{
+            server = new ServerSocket(port);
+
+            System.out.println("Asteapta conexiune de la client pe portul " + port);
+            client = server.accept();
+            System.out.println("Conexiune client stabilita de la " +
+                    client.getRemoteSocketAddress());
+
+            in = new DataInputStream(client.getInputStream());
+            out = new DataOutputStream(client.getOutputStream());
+            String mesajClient = null;
+
+            while(true){
+                if (!client.isConnected()) {
+                    in.close();
+                    out.close();
+                    client.close();
+                    server.close();
+                    break;
+                }
+
+                int nrAp = Integer.parseInt(in.readUTF());
+                System.out.println("Nr apartament primit: " + nrAp);
+
+                Apartament ap = null;
+
+                for(Apartament a : listaApartamente){
+                    if(a.getNumar_apartament() == nrAp){
+                        ap = a;
+                    }
+                }
+
+                double valPlataApartament = fGunoi.getValoare();
+                double valPlataSuprafata = fCaldura.getValoare() * ap.getSuprafata();
+                double valPlataPersoane = fApaCalda.getValoare() * ap.getNumar_persoane() + fGazeNaturale.getValoare() * ap.getNumar_persoane();
+
+                out.writeUTF("Valori de plata pentru apartamentul: " + nrAp
+                        + "\n Cheltuieli persoane: " + valPlataPersoane
+                        + "\n Cheltuieli suprafata: " + valPlataSuprafata
+                        + "\n Cheltuieli aparatament: " + valPlataApartament);
+
+                System.out.println("Lista cheltuieli pentru apartamentul " + nrAp + " trimisa catre client!");
+                break;
+            }
+
+        } catch (EOFException e) {
+            System.out.println("Conexiune inchisa de catre client");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            in.close();
+            out.close();
+            client.close();
+            server.close();
+        }
+    }
+}
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class Main {
+
+    public static void main(String[] args){
+
+        //Citire din fisier text -------------------------
+        List<Apartament> listaApartamente = new ArrayList<>();
+
+        try{
+            var fisierApartamente = new File("src\\intretinere_apartamente.txt");
+
+            Scanner readerApartamente = new Scanner(fisierApartamente).useDelimiter(",");
+
+            while(readerApartamente.hasNextLine()){
+                String linie = readerApartamente.nextLine();
+                String[] elemAp = linie.split(",");
+
+                int numar_apartament = Integer.parseInt(elemAp[0]);
+                int suprafata = Integer.parseInt(elemAp[1]);
+                int numar_persoane = Integer.parseInt(elemAp[2]);
+
+                Apartament tempAp = new Apartament(numar_apartament, suprafata, numar_persoane);
+                listaApartamente.add(tempAp);
+            }
+            readerApartamente.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        listaApartamente.forEach(System.out::println);
+
+        //Ex. 1 ---------------------------------
+        int nrApSuprafataMax = 0;
+        int suprafataMax = 0;
+        for(Apartament a : listaApartamente){
+            if(a.getSuprafata() > suprafataMax){
+                nrApSuprafataMax = a.getNumar_apartament();
+                suprafataMax = a.getSuprafata();
+            }
+        }
+
+        System.out.println("Nr apartamentului cu suprafata maxima este: " + nrApSuprafataMax);
+
+        //Ex. 2 ---------------------------------
+        int nrTotalPersoane = 0;
+        for(Apartament a : listaApartamente){
+            nrTotalPersoane += a.getNumar_persoane();
+        }
+
+        System.out.println("Nr total persoane care locuiesc in imobil: " + nrTotalPersoane);
+
+        //Citire din fisier JSON
+        List<Factura> listaFacturi = new ArrayList<>();
+
+        try(var fisier = new FileReader("src\\intretinere_facturi.json")){
+            var jsonFacturi = new JSONArray(new JSONTokener(fisier));
+
+            for(int i=0; i<jsonFacturi.length(); i++) {
+                var jsonFactura = jsonFacturi.getJSONObject(i);
+
+                Factura tempFactura = new Factura(
+                        jsonFactura.getString("denumire"),
+                        jsonFactura.getString("repartizare"),
+                        jsonFactura.getDouble("valoare")
+                );
+
+                listaFacturi.add(tempFactura);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        listaFacturi.forEach(System.out::println);
+
+        //Ex. 3 ---------------------------------
+        double valTotalaPersoane = 0;
+        double valTotalaApartament = 0;
+        double valTotalaSuprafata = 0;
+
+        for(Factura f : listaFacturi){
+            if(f.getRepartizare().equals("persoane")){
+                valTotalaPersoane += f.getValoare();
+            }
+            else if(f.getRepartizare().equals("suprafata")){
+                valTotalaSuprafata += f.getValoare();
+            }
+            else if(f.getRepartizare().equals("apartament")){
+                valTotalaApartament += f.getValoare();
+            }
+        }
+
+        System.out.println("Valoare totala repartizare persoane: " + valTotalaPersoane);
+        System.out.println("Valoare totala repartizare suprafata: " + valTotalaSuprafata);
+        System.out.println("Valoare totala repartizare apartament: " + valTotalaApartament);
+
+        //Ex. 4 ---------------------------------
+        //Vezi ServerTCP si ClientTCP
+        // !!! Nu uita sa introduci argumentele pentru fiecare inainte de executie
+
+    }
+}
+
+
+
+

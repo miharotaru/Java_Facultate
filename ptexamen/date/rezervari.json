@@ -1,0 +1,47 @@
+[
+  {
+    "Denumire parcare":"Victoriei",
+    "Numar auto":"B24NOV",
+    "Numar ore":2
+  },
+  {
+    "Denumire parcare":"Unirea",
+    "Numar auto":"B321MSP",
+    "Numar ore":4
+  },
+  {
+    "Denumire parcare":"Victoriei",
+    "Numar auto":"B64LOH",
+    "Numar ore":3
+  },
+  {
+    "Denumire parcare":"Palatul Copiilor",
+    "Numar auto":"B154PYV",
+    "Numar ore":6
+  },
+  {
+    "Denumire parcare":"Universitate",
+    "Numar auto":"B489MOV",
+    "Numar ore":4
+  },
+  {
+    "Denumire parcare":"Unirea",
+    "Numar auto":"B71PRE",
+    "Numar ore":2
+  },
+  {
+    "Denumire parcare":"Palatul Copiilor",
+    "Numar auto":"B54LCB",
+    "Numar ore":5
+  },
+  {
+    "Denumire parcare":"Universitate",
+    "Numar auto":"B47COS",
+    "Numar ore":1
+  },
+  {
+    "Denumire parcare":"Palatul Copiilor",
+    "Numar auto":"B294NOM",
+    "Numar ore":8
+  }
+]

@@ -1,0 +1,174 @@
+//Fie datele de intrare (in directorul date):
+//
+//        a) intretinere_apartamente.txt: lista de apartamente (numar apartament - întreg,
+//        nume - string, valoare de plata - string) - fișier text de forma:
+//        1,Popescu,364.5
+//        2,Enescu,164.5
+//        3,Testescu,200.2
+//        ...
+//
+//        b) penalizari.json: fișier text în format JSON cu următoarea structură:
+//
+//        [
+//        {
+//        "numar_apartament": 1,
+//        "penalizare": 5.00
+//        },
+//        {
+//        "numar_apartament": 3,
+//        "penalizare": 5.32
+//        },
+//        ...
+//        ]
+//
+//        Un apartament poate avea cel mult o penalizare.
+//
+//        Să se scrie o aplicație Java care să îndeplinească următoarele cerințe:
+//
+//        1) Să se afișeze la consolă valoarea întreținerii (fără penalizări) pentru întreg imobilul în formatul:
+//
+//        CERINTA 1: total intretinere 1999.12 lei
+//
+//        Punctaj: 2 puncte.
+//        Criteriu de acordare a punctajului: afișarea corectă la consolă
+//
+//        2) Să se afișeze la consolă lista de apartamente ordonate descrescător în funcție de suma de plată.
+//        Pentru fiecare apartament se va afișa suma de plată, numărul și numele în formatul:
+//
+//        CERINTA 2:
+//        364.5  1 Popescu
+//        200.2  3 Testescu
+//        164.5  2 Enescu
+//
+//        Punctaj: 2 puncte.
+//        Criteriu de acordare a punctajului: afișarea corectă la consolă
+//
+//        3) Să se afișeze la consolă lista apartementelor care au penalizări.
+//        Pentru fiecare apartament se va afișa suma finala (suma inițială + penalizare), numărul și numele în formatul:
+//
+//        CERINTA 3:
+//        369.50  1 Popescu
+//        205.52  3 Testescu
+//
+//        Punctaj: 2 puncte.
+//        Criteriu de acordare a punctajului: afișarea corectă la consolă
+
+
+package com.examen;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Collections;
+
+class Apartment {
+    private final double intretinere;
+    private final int apartmentNumber;
+    private double penalizare = 0;
+    private final String ownerName;
+
+    public Apartment(double intretinere, int apartmentNumber, String ownerName) {
+        this.intretinere = intretinere;
+        this.apartmentNumber = apartmentNumber;
+        this.ownerName = ownerName;
+    }
+
+    static Apartment createFromTxtLine(String line) {
+        String[] splitLine = line.split(",");
+        int apartmentNumber = Integer.parseInt(splitLine[0]);
+        String owenrName = splitLine[1];
+        double intretinere = Double.parseDouble(splitLine[2]);
+        return new Apartment(intretinere, apartmentNumber, owenrName);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%.2f %d %s", intretinere, apartmentNumber, ownerName);
+    }
+
+    public String toStringWithPenalizare() {
+        return String.format("%.2f %d %s", intretinere + penalizare, apartmentNumber, ownerName);
+    }
+
+    public double getPenalizare() {
+        return penalizare;
+    }
+
+    public void setPenalizare(double penalizare) {
+        this.penalizare = penalizare;
+    }
+
+    public double getIntretinere() {
+        return intretinere;
+    }
+
+    public int getApartmentNumber() {
+        return apartmentNumber;
+    }
+}
+
+public class Examen {
+
+    public static void main(String[] args) throws IOException {
+        FileReader fileReader = new FileReader("src/com/examen/date/intretinere_apartamente.txt");
+        BufferedReader bufferedReader = new BufferedReader(fileReader);
+        ArrayList<String> lines = new ArrayList<>();
+        String currentLine = null;
+        while ((currentLine = bufferedReader.readLine()) != null) lines.add(currentLine);
+
+        bufferedReader.close();
+        System.out.println(lines);
+
+        ArrayList<Apartment> apartments = new ArrayList<>();
+
+        for (String line : lines) {
+            apartments.add(Apartment.createFromTxtLine(line));
+        }
+
+        InputStream is = new FileInputStream(new File("src/com/examen/date/penalizari.json"));
+
+        JSONTokener jsonTokener = new JSONTokener(is);
+
+        JSONArray jsonArray = new JSONArray(jsonTokener);
+
+        for (int i = 0; i < jsonArray.length(); i++) {
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+            double penalizare = jsonObject.getDouble("penalizare");
+            int apartmentNumber = jsonObject.getInt("numar_apartament");
+
+            for (Apartment apartment : apartments) {
+                if (apartment.getApartmentNumber() == apartmentNumber) {
+                    apartment.setPenalizare(penalizare);
+                }
+            }
+        }
+
+        // cerinta 1: total intretinere
+        double intretinereTotal = 0;
+        for (Apartment apartment : apartments) {
+            intretinereTotal += apartment.getIntretinere();
+        }
+        System.out.println("Cerinta 1");
+        System.out.println("Total intretinere: " + String.format("%.2f", intretinereTotal) + " lei");
+        System.out.println("-----------------------------------");
+        // cerinta 2: sortat descrescator in functie de intretinere
+        System.out.println("Cerinta 2");
+        Collections.sort(apartments, (ap1, ap2) -> -Double.compare(ap1.getIntretinere(), ap2.getIntretinere()));
+        for (Apartment apartment : apartments) {
+            System.out.println(apartment);
+        }
+        System.out.println("-------------------------------------");
+
+        // cerinta 3: apartamente care au penalizari
+        System.out.println("Cerinta 3");
+        for (Apartment apartment : apartments) {
+            if (apartment.getPenalizare() != 0) {
+                System.out.println(apartment.toStringWithPenalizare());
+            }
+        }
+
+    }
+}

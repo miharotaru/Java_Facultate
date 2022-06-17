@@ -1,0 +1,16 @@
+Victoriei
+135
+15
+Piata Victorie 1
+Universitate
+230
+12
+Piata Universitatii 3
+Unirea
+340
+12
+Bdul. George Coposu 2
+Palatul Copiilor
+250
+5
+Bdul. Tineretului 28

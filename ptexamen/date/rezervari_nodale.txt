@@ -1,0 +1,9 @@
+Otopeni,B24NOV,2
+Piata Revolutiei,B321MSP,1
+Obor,B64LOH,3
+Berceni,B154PYV,4
+Gara de Nord,B489MOV,6
+Obor,B14HYV,5
+Berceni,B151PKV,8
+Otopeni,B27FET,12
+Obor,B32LUV,6

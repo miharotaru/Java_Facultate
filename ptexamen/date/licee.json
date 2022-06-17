@@ -1,0 +1,84 @@
+[
+  {
+    "codLiceu": 1,
+    "numeLiceu": "Colegiul National Gheorghe Sincai",
+    "specializari": [
+      {
+        "codSpecializare": 1,
+        "numarLocuri": 140
+      },
+      {
+        "codSpecializare": 2,
+        "numarLocuri": 56
+      }
+    ]
+  },
+  {
+    "codLiceu": 2,
+    "numeLiceu": "Colegiul National de Informatica Tudor Vianu",
+    "specializari": [
+      {
+        "codSpecializare": 1,
+        "numarLocuri": 240
+      },
+      {
+        "codSpecializare": 5,
+        "numarLocuri": 56
+      }
+    ]
+  },
+  {
+    "codLiceu": 3,
+    "numeLiceu": "Colegiul National Sfantul Sava",
+    "specializari": [
+      {
+        "codSpecializare": 1,
+        "numarLocuri": 112
+      },
+      {
+        "codSpecializare": 2,
+        "numarLocuri": 56
+      },
+      {
+        "codSpecializare": 3,
+        "numarLocuri": 28
+      }
+    ]
+  },
+  {
+    "codLiceu": 4,
+    "numeLiceu": "Colegiul National Andrei Saguna Brasov",
+    "specializari": [
+      {
+        "codSpecializare": 1,
+        "numarLocuri": 84
+      },
+      {
+        "codSpecializare": 2,
+        "numarLocuri": 84
+      },
+      {
+        "codSpecializare": 3,
+        "numarLocuri": 84
+      },
+      {
+        "codSpecializare": 7,
+        "numarLocuri": 28
+      }
+    ]
+  },
+  {
+    "codLiceu": 5,
+    "numeLiceu": "Colegiul National de Informatica Grigore Moisil Brasov",
+    "specializari": [
+      {
+        "codSpecializare": 1,
+        "numarLocuri": 140
+      },
+      {
+        "codSpecializare": 5,
+        "numarLocuri": 28
+      }
+    ]
+  }
+]

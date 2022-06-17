@@ -1,0 +1,22 @@
+[
+  {
+    "denumire": "Apa calda",
+    "repartizare": "persoane",
+    "valoare": 800
+  },
+  {
+    "denumire": "Caldura",
+    "repartizare": "suprafata",
+    "valoare": 300
+  },
+  {
+    "denumire": "Gunoi",
+    "repartizare": "apartament",
+    "valoare": 100
+  },
+  {
+    "denumire": "Gaze naturale",
+    "repartizare": "persoane",
+    "valoare": 140
+  }
+]

@@ -1,0 +1,3 @@
+1,ORL,10
+2,Pneumologie,15
+3,Chirurgie,5

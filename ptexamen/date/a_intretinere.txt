@@ -1,0 +1,5 @@
+1,Popescu,364.5
+2,Enescu,164.5
+3,Testescu,200.2
+4,Gavril,123.5
+5,Cordescu,233.2

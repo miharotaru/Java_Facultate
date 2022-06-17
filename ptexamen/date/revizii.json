@@ -1,0 +1,37 @@
+[
+  {
+    "Numar inmatriculare":"CV04LIV",
+    "Data reviziei": "10.11.2018",
+    "Tip revizie": "TPU",
+    "Km parcursi": 60000,
+    "Cost": 900
+  },
+  {
+    "Numar inmatriculare":"CV04LIV",
+    "Data reviziei": "15.11.2019",
+    "Tip revizie": "ITP",
+    "Km parcursi": 120000,
+    "Cost": 195
+  },
+  {
+    "Numar inmatriculare":"B46EAL",
+    "Data reviziei": "05.05.2020",
+    "Tip revizie": "TPU",
+    "Km parcursi": 12000,
+    "Cost": 1250
+  },
+  {
+    "Numar inmatriculare":"B46EAL",
+    "Data reviziei": "05.06.2021",
+    "Tip revizie": "ITP",
+    "Km parcursi": 165000,
+    "Cost": 125
+  },
+  {
+    "Numar inmatriculare":"BV98RIO",
+    "Data reviziei": "09.12.2020",
+    "Tip revizie": "TPU",
+    "Km parcursi": 75000,
+    "Cost": 1300
+  }
+]

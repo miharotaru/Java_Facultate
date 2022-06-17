@@ -1,0 +1,486 @@
+//În fișierul date\sectii.json se găsesc informații privind secțiile unui spital de urgență.
+//        Fisierul este structurat astfel:
+//        [
+//        {
+//        "cod_sectie": 1,
+//        "denumire": "ORL",
+//        "numar_locuri":10
+//        },
+//        ...
+//        ]
+//        În fișierul date\pacienti.txt se află informații privind pacienții internați, câte o
+//        linie pentru fiecare pacient, astfel:
+//        cnp_pacient, nume_pacient,varsta,cod_secție
+//        ...
+//        Cnp-ul este de tip long, numele este șir de caractere iar codul secției si varsta sunt intregi.
+//
+//        Să se scrie o aplicație Java care să îndeplinească următoarele cerințe:
+//
+//        1) Să afișeze la consolă lista secțiilor spitalului cu un număr de locuri strict mai mare decât 10
+//        Punctaj: 1 punct.
+//        Criteriu de acordare a punctajului: afișarea corectă la consolă
+//
+//        2) Să afișeze la consolă lista secțiilor spitalului sortată descrescător după varsta medie a pacientilor
+//        internați pe secție.
+//        Pentru fiecare secție se va afișa codul, denumirea, numărul de locuri și vârsta medie a pacienților.
+//        Punctaj: 1 punct
+//        Criteriu de acordare a punctajului: afișarea corectă la consolă
+//
+//        3) Să se scrie în fișierul text jurnal.txt un raport al internărilor pe secții, de forma:
+//        cod_secție_1,nume secție_1,numar_pacienti_1
+//        ...
+//        Punctaj: 1 punct
+//        Criteriu de acordare a punctajului: urmărirea fișierului raport.txt
+//
+//        4) Să implementeze funcționalitățile de server și client TCP/IP și să se execute următorul scenariu:
+//        componenta client trimite serverului codul unei secții iar componenta server va întoarce clientului numărul de locuri libere.
+//        Serverul se va opri după servirea unei cereri.
+//
+//        Punctaj:
+//        1 punct - afișarea la consolă de către server a codului primit de la client
+//        1 punct - afișarea la consolă de către client a numărului de locuri libere
+//        Criteriu de acordare a punctajului: afișarea corectă la consolă
+
+
+*********************************
+*********************************
+*********************************
+
+public class Pacient {
+
+    private long cnp_pacient;
+    private String nume_pacient;
+    private int varsta;
+    private int cod_sectie;
+
+    public Pacient(long cnp_pacient, String nume_pacient, int varsta, int cod_sectie) {
+        this.cnp_pacient = cnp_pacient;
+        this.nume_pacient = nume_pacient;
+        this.varsta = varsta;
+        this.cod_sectie = cod_sectie;
+    }
+
+    public long getCnp_pacient() {
+        return cnp_pacient;
+    }
+
+    public String getNume_pacient() {
+        return nume_pacient;
+    }
+
+    public int getVarsta() {
+        return varsta;
+    }
+
+    public int getCod_sectie() {
+        return cod_sectie;
+    }
+
+    @Override
+    public String toString() {
+        return "Pacient{" +
+                "cnp_pacient=" + cnp_pacient +
+                ", nume_pacient='" + nume_pacient + '\'' +
+                ", varsta=" + varsta +
+                ", cod_sectie=" + cod_sectie +
+                '}';
+    }
+}
+public class Sectie {
+
+    private int cod_sectie;
+    private String denumire;
+    private int numar_locuri;
+    private float varsta_medie_pacienti;
+
+    public Sectie(int cod_sectie, String denumire, int numar_locuri) {
+        this.cod_sectie = cod_sectie;
+        this.denumire = denumire;
+        this.numar_locuri = numar_locuri;
+        this.varsta_medie_pacienti = 0;
+    }
+
+    public int getCod_sectie() {
+        return cod_sectie;
+    }
+
+    public String getDenumire() {
+        return denumire;
+    }
+
+    public int getNumar_locuri() {
+        return numar_locuri;
+    }
+
+    public float getVarsta_medie_pacienti() {
+        return varsta_medie_pacienti;
+    }
+
+    public void setVarsta_medie_pacienti(float varsta_medie_pacienti) {
+        this.varsta_medie_pacienti = varsta_medie_pacienti;
+    }
+
+    @Override
+    public String toString() {
+        return "Sectie{" +
+                "cod_sectie=" + cod_sectie +
+                ", denumire='" + denumire + '\'' +
+                ", numar_locuri=" + numar_locuri +
+                ", varsta_medie_pacienti=" + varsta_medie_pacienti +
+                '}';
+    }
+}
+import java.io.*;
+import java.net.Socket;
+import java.net.UnknownHostException;
+
+public class ClientTCP {
+
+    public static void main(String[] args){
+        if (args.length != 2) {
+            System.out.println("Numar incorect de parametri! Utilizare: <adresa IP> <port>");
+            System.exit(-1);
+        }
+
+        String adresaServer = args[0];
+        int port = Integer.valueOf(args[1]);
+
+        try{
+            System.out.println("Conectare la " + adresaServer + " port " + port);
+            Socket client = new Socket(adresaServer, port);
+
+            OutputStream streamIesire = client.getOutputStream();
+            DataOutputStream out = new DataOutputStream(streamIesire);
+
+            InputStream streamIntrare = client.getInputStream();
+            DataInputStream in = new DataInputStream(streamIntrare);
+
+            BufferedReader linieTastatura =  new BufferedReader(new InputStreamReader(System.in));
+            System.out.println("Scrie 'exit' pentru a inchide clientul");
+
+            while(true){
+                String linie = linieTastatura.readLine();
+
+                if(linie.equalsIgnoreCase("exit")){
+                    in.close();
+                    out.close();
+                    client.close();
+                    System.exit(0);
+                }
+
+                out.writeUTF(linie);
+
+                System.out.println(in.readUTF());
+
+                in.close();
+                out.close();
+                client.close();
+                System.exit(0);
+            }
+
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+import org.json.JSONArray;
+import org.json.JSONTokener;
+
+import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class ServerTCP {
+
+    private static ServerSocket server;
+
+    public static void main(String[] args) throws IOException {
+        if(args.length != 1){
+            System.out.println("Numar incorect de parametri! Utilizare: <port>");
+            System.exit(-1);
+        }
+
+        //Citire sectii din JSON
+        List<Sectie> listaSectii = new ArrayList<>();
+
+        try(var fisier = new FileReader("src\\sectii.json")){
+            var jsonSectii = new JSONArray(new JSONTokener(fisier));
+
+            for(int i=0; i<jsonSectii.length(); i++){
+                var jsonSectie = jsonSectii.getJSONObject(i);
+
+                Sectie tempSectie = new Sectie(
+                        jsonSectie.getInt("cod_sectie"),
+                        jsonSectie.getString("denumire"),
+                        jsonSectie.getInt("numar_locuri")
+                );
+
+                listaSectii.add(tempSectie);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Citire pacienti din fisier text
+        List<Pacient> listaPacienti = new ArrayList<>();
+
+        try{
+            var fisierPacienti = new File("src\\pacienti.txt");
+
+            Scanner readerPacienti = new Scanner(fisierPacienti);
+
+            while(readerPacienti.hasNextLine()){
+                String linie = readerPacienti.nextLine();
+                String[] elemLinie = linie.split(",");
+
+                long cnp_pacient = Long.parseLong(elemLinie[0]);
+                String nume_pacient = elemLinie[1];
+                int varsta = Integer.parseInt(elemLinie[2]);
+                int numar_sectie = Integer.parseInt(elemLinie[3]);
+
+                Pacient tempPacient = new Pacient(cnp_pacient, nume_pacient, varsta, numar_sectie);
+                listaPacienti.add(tempPacient);
+            }
+            readerPacienti.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        int nrPacientiORL = 0;
+        int nrPacientiPneumologie = 0;
+        int nrPacientiChirurgie = 0;
+
+        for(Pacient p : listaPacienti){
+            if(p.getCod_sectie() == 1){
+                nrPacientiORL++;
+            }
+            else if(p.getCod_sectie() == 2){
+                nrPacientiPneumologie++;
+            }
+            else if(p.getCod_sectie() == 3){
+                nrPacientiChirurgie++;
+            }
+        }
+
+        //implementare efectiva server
+        int port = Integer.valueOf(args[0]);
+
+        DataInputStream in = null;
+        DataOutputStream out = null;
+        Socket client = null;
+
+        try{
+            server = new ServerSocket(port);
+
+            System.out.println("Asteapta conexiune de la client pe portul " + port);
+            client = server.accept();
+            System.out.println("Conexiune client stabilita de la " +
+                    client.getRemoteSocketAddress());
+
+            in = new DataInputStream(client.getInputStream());
+            out = new DataOutputStream(client.getOutputStream());
+            String mesajClient = null;
+
+            while(true){
+                if (!client.isConnected()) {
+                    in.close();
+                    out.close();
+                    client.close();
+                    server.close();
+                    break;
+                }
+
+                int codPrimit = Integer.parseInt(in.readUTF());
+                System.out.println("Cod sectie primit: " + codPrimit);
+
+                Sectie sectieTemp = null;
+
+                for(Sectie s : listaSectii){
+                    if(s.getCod_sectie() == codPrimit){
+                        sectieTemp = s;
+                    }
+                }
+
+                int nrLocuriLibere = 0;
+                if(sectieTemp.getCod_sectie() == 1){
+                    nrLocuriLibere = sectieTemp.getNumar_locuri() - nrPacientiORL;
+                }
+                if(sectieTemp.getCod_sectie() == 2){
+                    nrLocuriLibere = sectieTemp.getNumar_locuri() - nrPacientiPneumologie;
+                }
+                if(sectieTemp.getCod_sectie() == 3){
+                    nrLocuriLibere = sectieTemp.getNumar_locuri() - nrPacientiChirurgie;
+                }
+
+                out.writeUTF("Numarul de locuri libere in sectia: " + sectieTemp.getDenumire()
+                        + " este: " + nrLocuriLibere);
+
+                System.out.println("Numarul de locuri libere pentru sectia " + sectieTemp.getDenumire() + " trimisa catre client!");
+                break;
+            }
+
+        } catch (EOFException e) {
+            System.out.println("Conexiune inchisa de catre client");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            in.close();
+            out.close();
+            client.close();
+            server.close();
+        }
+    }
+}
+
+import org.json.JSONArray;
+import org.json.JSONTokener;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args){
+
+        //Citire sectii din JSON
+        List<Sectie> listaSectii = new ArrayList<>();
+
+        try(var fisier = new FileReader("src\\sectii.json")){
+            var jsonSectii = new JSONArray(new JSONTokener(fisier));
+
+            for(int i=0; i<jsonSectii.length(); i++){
+                var jsonSectie = jsonSectii.getJSONObject(i);
+
+                Sectie tempSectie = new Sectie(
+                        jsonSectie.getInt("cod_sectie"),
+                        jsonSectie.getString("denumire"),
+                        jsonSectie.getInt("numar_locuri")
+                );
+
+                listaSectii.add(tempSectie);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        listaSectii.forEach(System.out::println);
+        System.out.println();
+
+        // Ex 1 --------------------------------
+        listaSectii
+                .stream()
+                .filter(x -> x.getNumar_locuri() > 10)
+                .forEach(System.out::println);
+
+        // Citire pacienti din fisier text
+        List<Pacient> listaPacienti = new ArrayList<>();
+
+        try{
+            var fisierPacienti = new File("src\\pacienti.txt");
+
+            Scanner readerPacienti = new Scanner(fisierPacienti);
+
+            while(readerPacienti.hasNextLine()){
+                String linie = readerPacienti.nextLine();
+                String[] elemLinie = linie.split(",");
+
+                long cnp_pacient = Long.parseLong(elemLinie[0]);
+                String nume_pacient = elemLinie[1];
+                int varsta = Integer.parseInt(elemLinie[2]);
+                int numar_sectie = Integer.parseInt(elemLinie[3]);
+
+                Pacient tempPacient = new Pacient(cnp_pacient, nume_pacient, varsta, numar_sectie);
+                listaPacienti.add(tempPacient);
+            }
+            readerPacienti.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        listaPacienti.forEach(System.out::println);
+        System.out.println();
+
+        // Ex 2 --------------------------------
+        float varstaMedieORL = 0;
+        int nrPacientiORL = 0;
+        float varstaMediePneumologie = 0;
+        int nrPacientiPneumologie = 0;
+        float varstaMedieChirurgie = 0;
+        int nrPacientiChirurgie = 0;
+
+        for(Pacient p : listaPacienti){
+            if(p.getCod_sectie() == 1){
+                nrPacientiORL++;
+                varstaMedieORL+=p.getVarsta();
+            }
+            else if(p.getCod_sectie() == 2){
+                nrPacientiPneumologie++;
+                varstaMediePneumologie+=p.getVarsta();
+            }
+            else if(p.getCod_sectie() == 3){
+                nrPacientiChirurgie++;
+                varstaMedieChirurgie+=p.getVarsta();
+            }
+        }
+
+        varstaMedieORL /= nrPacientiORL;
+        varstaMediePneumologie /= nrPacientiPneumologie;
+        varstaMedieChirurgie /= nrPacientiChirurgie;
+
+        for(Sectie s : listaSectii){
+            if(s.getCod_sectie() == 1){
+                s.setVarsta_medie_pacienti(varstaMedieORL);
+            }
+            else if(s.getCod_sectie() == 2){
+                s.setVarsta_medie_pacienti(varstaMediePneumologie);
+            }
+            else if(s.getCod_sectie() == 3){
+                s.setVarsta_medie_pacienti(varstaMedieChirurgie);
+            }
+        }
+
+        listaSectii
+                .stream()
+                .sorted(Comparator.comparingDouble(Sectie::getVarsta_medie_pacienti).reversed())
+                .forEach(System.out::println);
+
+        // Ex 3 --------------------------------
+        try{
+            PrintWriter writerSectii = new PrintWriter(new File("src\\raport.txt"));
+
+            for(Sectie s : listaSectii){
+                if(s.getCod_sectie() == 1){
+                    writerSectii.println("cod_sectie: " + s.getCod_sectie()
+                        + " nume_sectie: " + s.getDenumire()
+                        + " numar_pacienti: " + nrPacientiORL);
+                }
+                else if(s.getCod_sectie() == 2){
+                    writerSectii.println("cod_sectie: " + s.getCod_sectie()
+                            + " nume_sectie: " + s.getDenumire()
+                            + " numar_pacienti: " + nrPacientiPneumologie);
+                }
+                else if(s.getCod_sectie() == 3){
+                    writerSectii.println("cod_sectie: " + s.getCod_sectie()
+                            + " nume_sectie: " + s.getDenumire()
+                            + " numar_pacienti: " + nrPacientiChirurgie);
+                }
+            }
+            writerSectii.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+    }
+}

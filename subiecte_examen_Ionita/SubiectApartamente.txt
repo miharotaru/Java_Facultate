@@ -1,0 +1,441 @@
+Fie datele de intrare (in directorul date):
+
+a) intretinere_facturi.txt: lista de facturi (denumire - string, repartizare - string, valoare - double) - fișier text de forma:
+
+Gaze naturale,persoane,140
+Apa calda,persoane,800
+Caldura,suprafata,300
+Gunoi,apartament,100
+
+Câmpul repartizare poate avea următoarele valori: apartament, suprafata sau persoane.
+Denumirea facturii nu poate conține caracterul virgulă.
+
+b) tabela Apartamente din baza de date SQLite intretinere.db cu următoarele câmpuri:
+NumarApartament - integer
+Suprafata - integer
+NumarPersoane - integer
+
+Să se scrie o aplicație Java care să îndeplinească următoarele cerințe:
+
+1) Să se afișeze la consolă valoarea totală a facturilor.
+Punctaj: 1 punct.
+Criteriu de acordare a punctajului: afișarea corectă la consolă
+
+2) Să se afișeze la consolă valoarea totală a facturilor pe fiecare tip de repartizare.
+Punctaj: 1 punct.
+Criteriu de acordare a punctajului: afișarea corectă la consolă
+
+3) Să se afișeze la consolă suprafața totală a apartamentelor din bloc.
+Punctaj: 1 punct.
+Criteriu de acordare a punctajului: afișarea corectă la consolă
+
+4) Să se scrie în fișierul text date\tabel_intretinere.txt tabelul de intreținere în forma:
+
+Număr apartament, Suprafata, Persoane, Cheltuieli Suprafata, Cheltuieli Persoane, Cheltuieli Apartament, Total de plata
+...
+
+Tabelul trebuie să fie sortat în funcție de numărul apartamentului.
+
+Punctaj: 2 puncte
+Criteriu de acordare a punctajului: urmărirea fișierului tabel_intretinere.txt
+
+*********************************
+*********************************
+*********************************
+
+rezolvat de mine de 3)
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+class Factura{
+    private String denumire;
+    private String repartizare;
+    private double valoare;
+
+     public Factura() {
+     }
+
+     public Factura(String denumire, String repartizare, double valoare) {
+         this.denumire = denumire;
+         this.repartizare = repartizare;
+         this.valoare = valoare;
+     }
+
+     public String getDenumire() {
+         return denumire;
+     }
+
+     public void setDenumire(String denumire) {
+         this.denumire = denumire;
+     }
+
+     public String getRepartizare() {
+         return repartizare;
+     }
+
+     public void setRepartizare(String repartizare) {
+         this.repartizare = repartizare;
+     }
+
+     public double getValoare() {
+         return valoare;
+     }
+
+     public void setValoare(double valoare) {
+         this.valoare = valoare;
+     }
+
+     @Override
+     public String toString() {
+         return "Apartament{ denumire= "+ denumire+
+                 ","+"repartizare= "+repartizare+","+
+                 "valoare= "+valoare;
+     }
+ }
+ class Apartament{
+    private int nrApartament;
+    private int suprafata;
+    private int nrPersoane;
+    private List<Factura> listaFacturi;
+
+     public Apartament(int nrApartament, int suprafata, int nrPersoane) {
+         this.nrApartament = nrApartament;
+         this.suprafata = suprafata;
+         this.nrPersoane = nrPersoane;
+         listaFacturi=new ArrayList<>();
+     }
+
+     public int getNrApartament() {
+         return nrApartament;
+     }
+
+     public void setNrApartament(int nrApartament) {
+         this.nrApartament = nrApartament;
+     }
+
+     public int getSuprafata() {
+         return suprafata;
+     }
+
+     public void setSuprafata(int suprafata) {
+         this.suprafata = suprafata;
+     }
+
+     public int getNrPersoane() {
+         return nrPersoane;
+     }
+
+     public void setNrPersoane(int nrPersoane) {
+         this.nrPersoane = nrPersoane;
+     }
+
+     @Override
+     public String toString() {
+         final StringBuilder sb = new StringBuilder("Apartament{");
+         sb.append("nrApartament=").append(nrApartament);
+         sb.append(", suprafata=").append(suprafata);
+         sb.append(", nrPersoane=").append(nrPersoane);
+         sb.append('}');
+         return sb.toString();
+     }
+ }
+
+
+class MainApartamente {
+    static List<Factura> listaFacturi=new ArrayList<>();
+    static List<Apartament> listaApartamente=new ArrayList<>();
+    public static void main(String[] args){
+        String CALE_FACTURI="date\\intretinere_facturi.txt";
+
+        //citire din fisier txt
+        try(var fisier=new BufferedReader(new FileReader(CALE_FACTURI))){
+
+            listaFacturi=fisier.lines().map(linie->new Factura(
+                    linie.split(",")[0],
+                    linie.split(",")[1],
+                    Double.parseDouble(linie.split(",")[2])
+            )).collect(Collectors.toList());
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+        var valoareTotalaFacturi=0;
+        for (Factura f:listaFacturi) {
+            valoareTotalaFacturi+=f.getValoare();
+        }
+        System.out.println("CERINTA 1------:"+valoareTotalaFacturi);
+        var valoareTotalaApartament=0;
+        var valoareTotalaSuprafata=0;
+        var valoareTotalaPersoane=0;
+        for (Factura f:listaFacturi){
+            if(f.getRepartizare().equals("apartament")){
+                valoareTotalaApartament+=f.getValoare();
+            }
+            if(f.getRepartizare().equals("suprafata")){
+                valoareTotalaSuprafata+=f.getValoare();
+            }
+            if(f.getRepartizare().equals("persoane")){
+                valoareTotalaPersoane+=f.getValoare();
+            }
+        }
+        System.out.print("CERINTA 2--------");
+        System.out.println("Apartament "+valoareTotalaApartament);
+        System.out.println("Suprafata "+valoareTotalaSuprafata);
+        System.out.println("Persoane"+valoareTotalaPersoane);
+
+//citire din data de baze
+      //private static void citireApartamente(Connection connection){
+            try (Connection c = DriverManager.getConnection("jdbc:sqlite:date\\intretinere.db")) {
+
+                try (Statement s = c.createStatement();
+                     ResultSet rs = s.executeQuery("select * from APARTAMENTE")) {
+                    while (rs.next()) {
+                        int numarApartament = rs.getInt(1);
+                        int suprafata = rs.getInt(2);
+                        int numarPersoane = rs.getInt(3);
+                        Apartament apartament = new Apartament(numarApartament, suprafata, numarPersoane);
+                        listaApartamente.add(apartament);
+                    }
+                }
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+
+var suprafataTotala=0;
+        for (Apartament a:listaApartamente  ) {
+            suprafataTotala+=a.getSuprafata();
+ }
+        System.out.println("CERINTA 3---------"+suprafataTotala);
+        }
+
+    }
+
+*******************************************************
+rezolvat complet:
+
+public class Apartament {
+
+    private int numar_apartament;
+    private int suprafata;
+    private int numar_persoane;
+
+    public Apartament(int numar_apartament, int suprafata, int numar_persoane) {
+        this.numar_apartament = numar_apartament;
+        this.suprafata = suprafata;
+        this.numar_persoane = numar_persoane;
+    }
+
+    public int getNumar_apartament() {
+        return numar_apartament;
+    }
+
+    public int getSuprafata() {
+        return suprafata;
+    }
+
+    public int getNumar_persoane() {
+        return numar_persoane;
+    }
+
+    @Override
+    public String toString() {
+        return "Apartament{" +
+                "numar_apartament=" + numar_apartament +
+                ", suprafata=" + suprafata +
+                ", numar_persoane=" + numar_persoane +
+                '}';
+    }
+}
+
+public class Factura {
+
+    private String denumire_factura;
+    private String repartizare;
+    private double valoare;
+
+    public Factura(String denumire_factura, String repartizare, double valoare) {
+        this.denumire_factura = denumire_factura;
+        if(repartizare.equals("persoane") || repartizare.equals("suprafata") || repartizare.equals("apartament")){
+            this.repartizare = repartizare;
+        }
+        else{
+            this.repartizare = "";
+        }
+        this.valoare = valoare;
+    }
+
+    public String getDenumire_factura() {
+        return denumire_factura;
+    }
+
+    public String getRepartizare() {
+        return repartizare;
+    }
+
+    public double getValoare() {
+        return valoare;
+    }
+
+    @Override
+    public String toString() {
+        return "Factura{" +
+                "denumire_factura='" + denumire_factura + '\'' +
+                ", repartizare='" + repartizare + '\'' +
+                ", valoare=" + valoare +
+                '}';
+    }
+}
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class Main {
+
+    //Pentru legatura cu DB
+    private static Connection connection;
+    private static Statement sqlStatement;
+
+    public static void main(String[] args){
+
+        // Citire din fisier text + afisare lista la consola ---------------------------------
+        List<Factura> listaFacturi = new ArrayList<>();
+
+        try{
+            var fisierFacturi = new File("src\\intretinere_facturi.txt");
+            Scanner readerFacturi = new Scanner(fisierFacturi).useDelimiter(",");
+            while(readerFacturi.hasNextLine()){
+                String linie = readerFacturi.nextLine();
+
+                String[] elemFactura = linie.split(",");
+                String denumire_factura = elemFactura[0];
+                String repartizare = elemFactura[1];
+                double valoare = Double.parseDouble(elemFactura[2]);
+
+                Factura facturaTemp = new Factura(denumire_factura, repartizare, valoare);
+                listaFacturi.add(facturaTemp);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        listaFacturi.forEach(System.out::println);
+
+        // Ex. 1 ---------------------------------
+
+        double valTotalaFacturi = 0;
+        for(Factura f : listaFacturi){
+            valTotalaFacturi += f.getValoare();
+        }
+
+        System.out.println("Valoarea totala a facturilor este: " + valTotalaFacturi);
+
+        // Ex. 2 ---------------------------------
+
+        double valFacturiPersoane = 0, valFacturiApartament = 0, valFacturiSuprafata = 0;
+        for(Factura f : listaFacturi){
+            if(f.getRepartizare().equals("persoane")){
+                valFacturiPersoane += f.getValoare();
+            }
+            else if(f.getRepartizare().equals("apartament")){
+                valFacturiApartament += f.getValoare();
+            }
+            else if (f.getRepartizare().equals("suprafata")){
+                valFacturiSuprafata += f.getValoare();
+            }
+        }
+
+        System.out.println("Valoarea totala facturi persoane: " + valFacturiPersoane);
+        System.out.println("Valoarea totala facturi apartament: " + valFacturiApartament);
+        System.out.println("Valoarea totala facturi suprafata: " + valFacturiSuprafata);
+
+        // Citire din DB ---------------------------------
+        String url = "jdbc:sqlite:src\\intretinere.db";
+        List<Apartament> listaApartamente = new ArrayList<>();
+
+        try{
+            connection = DriverManager.getConnection(url);
+            System.out.println("Conexiune la DB realizata cu succes!");
+
+            sqlStatement = connection.createStatement();
+
+            ResultSet resultSet = sqlStatement.executeQuery("select * from Apartamente");
+
+            while(resultSet.next()){
+                int numar_apartament = resultSet.getInt(1);
+                int suprafata = resultSet.getInt(2);
+                int numar_persoane = resultSet.getInt(3);
+
+                Apartament localApartament = new Apartament(numar_apartament, suprafata, numar_persoane);
+                listaApartamente.add(localApartament);
+            }
+
+            //DB closing
+            if (sqlStatement != null)
+                sqlStatement.close();
+
+            if (connection != null)
+                connection.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        listaApartamente.forEach(System.out::println);
+
+        // Ex. 3 ---------------------------------
+        int suprafataTotalaAp = 0;
+        for(Apartament a : listaApartamente){
+            suprafataTotalaAp += a.getSuprafata();
+        }
+
+        System.out.println("Suprafata totala a apartamentelor din bloc este: " + suprafataTotalaAp);
+
+        // Ex. 4 ---------------------------------
+        Factura fApaCalda = listaFacturi.get(0);
+        Factura fCaldura = listaFacturi.get(1);
+        Factura fGunoi = listaFacturi.get(2);
+        Factura fGazeNaturale = listaFacturi.get(3);
+
+        //Scriere in fisier text
+        try{
+            PrintWriter writeTabel = new PrintWriter(new File("date\\tabel_intretinere.txt"));
+
+            writeTabel.println("Nr ap | Suprafata | Nr pers | Chelt suprafata | Chelt persoane | Chelt ap | Total de plata");
+
+            for(Apartament a : listaApartamente){
+                double cheltSuprafata = a.getSuprafata() * fCaldura.getValoare();
+                double cheltPersoane = a.getNumar_persoane() * fApaCalda.getValoare() + a.getNumar_persoane() * fGazeNaturale.getValoare();
+                double cheltApartament = fGunoi.getValoare();
+                double totalPlata = cheltSuprafata + cheltPersoane + cheltApartament;
+
+                /*writeTabel.println("Nr ap: " + a.getNumar_apartament()
+                        + ", Suprafata: " + ", " +a.getSuprafata()
+                        + ", Nr pers: " + a.getNumar_persoane()
+                        + ", Chelt suprafata: " + cheltSuprafata
+                        + ", Chelt persoane: " + cheltPersoane
+                        + ", Chelt ap: " + cheltApartament
+                        + ", Total de plata: " + totalPlata);*/
+
+                writeTabel.println(a.getNumar_apartament()
+                        + " | " + a.getSuprafata()
+                        + " | " + a.getNumar_persoane()
+                        + " | " + cheltSuprafata
+                        + " | " + cheltPersoane
+                        + " | " + cheltApartament
+                        + " | " + totalPlata);
+            }
+            writeTabel.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+}

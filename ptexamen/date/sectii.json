@@ -1,0 +1,17 @@
+[
+  {
+    "cod_sectie": 1,
+    "denumire": "ORL",
+    "numar_locuri":9
+  },
+  {
+    "cod_sectie": 2,
+    "denumire": "Pneumologie",
+    "numar_locuri":15
+  },
+  {
+    "cod_sectie": 3,
+    "denumire": "Chirurgie",
+    "numar_locuri":10
+  }
+]
